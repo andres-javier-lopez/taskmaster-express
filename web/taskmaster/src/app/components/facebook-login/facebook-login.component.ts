@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { EMPTY, Observable, concatMap, finalize, from, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-facebook-login',
@@ -20,11 +21,20 @@ export class FacebookLoginComponent {
 
   login() {
     this.inProgress = true;
-    this.facebookLogin().pipe(concatMap(accessToken => this.loginService.apiAuthenticate(accessToken ?? '')), finalize(() => this.inProgress = false)).subscribe((jwt) => {
-      localStorage.setItem('jwt', jwt.access_token);
-      localStorage.setItem('refresh', jwt.refresh_token);
-      this.loginService.updateStatus(true);
-    });
+    const win = window as typeof window & typeof globalThis & { opera: string, MSStream:unknown};
+    const userAgent = navigator.userAgent || navigator.vendor || win.opera;
+
+    if (/android/i.test(userAgent)) {
+      window.location.href = 'intent://' + environment.deepLink + '#Intent;package=com.facebook.katana;scheme=fb;end';
+    } else if (/iPad|iPhone|iPod/.test(userAgent) && !win.MSStream) {
+        window.location.href = 'fb://profile/' + environment.deepLink;
+    } else {
+      this.facebookLogin().pipe(concatMap(accessToken => this.loginService.apiAuthenticate(accessToken ?? '')), finalize(() => this.inProgress = false)).subscribe((jwt) => {
+        localStorage.setItem('jwt', jwt.access_token);
+        localStorage.setItem('refresh', jwt.refresh_token);
+        this.loginService.updateStatus(true);
+      });
+    }
   }
 
   facebookLogin(): Observable<string | undefined> {

@@ -22,7 +22,7 @@ services:
     ports:
       - 4200:4200
     env_file: .env
-    command: "ng serve --host 0.0.0.0 --configuration development"
+    command: "npm run start"
     volumes:
       - ./web/taskmaster/src:/usr/src/app/src
     depends_on:
