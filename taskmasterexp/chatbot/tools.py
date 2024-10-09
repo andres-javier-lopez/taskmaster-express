@@ -1,7 +1,6 @@
 import datetime
 import logging
 from uuid import UUID
-from zoneinfo import ZoneInfo
 
 from langchain_core.tools import tool
 
@@ -9,18 +8,6 @@ from taskmasterexp.database.managers import TaskManager, UserManager
 from taskmasterexp.schemas.tasks import Task, TaskStatus
 
 logger = logging.getLogger(__name__)
-
-
-def _get_weekday() -> str:
-    """Return the current weekday."""
-    return datetime.datetime.now().strftime("%A")
-
-
-@tool
-def get_current_time() -> str:
-    """Return the current time in ISO format and the weekday."""
-    zone = ZoneInfo("America/Los_Angeles")
-    return datetime.datetime.now(tz=zone).isoformat() + " " + _get_weekday()
 
 
 @tool
@@ -216,7 +203,6 @@ async def associate_email_to_user(user_id: str, email: str):
 
 
 tools = [
-    get_current_time,
     get_pending_task_list,
     get_tasks_for_date,
     add_new_task,

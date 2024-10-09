@@ -4,6 +4,7 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain.prompts.chat import ChatPromptTemplate, MessagesPlaceholder
 
 from taskmasterexp.auth.dependencies import CurrentUserWA, CurrentUserWS
+from taskmasterexp.helpers import get_current_time, get_weekday
 from taskmasterexp.schemas.tasks import Task
 from taskmasterexp.schemas.users import User
 from taskmasterexp.settings import DEMO_PHONE_NUMBERS
@@ -68,6 +69,7 @@ async def _get_chat_agent(user: User) -> AgentExecutor:
             "if the user says that it *will* or *should* do it, set a due date instead."
             "If you are not sure, ask for confirmation.",
         ),
+        ("system", f"Today is {get_weekday()}, {get_current_time()}"),
         ("system", email_message),
         MessagesPlaceholder(variable_name="history"),
         ("human", human_template),

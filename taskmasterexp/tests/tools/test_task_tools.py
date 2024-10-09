@@ -4,13 +4,13 @@ from taskmasterexp.chatbot.tools import (
     add_new_task,
     complete_task,
     delete_task,
-    get_current_time,
     get_pending_task_list,
     get_tasks_for_date,
     modify_task,
     set_task_due_date,
 )
 from taskmasterexp.database.managers import TaskManager
+from taskmasterexp.helpers import get_current_time
 from taskmasterexp.schemas.tasks import TaskStatus
 
 
@@ -40,8 +40,7 @@ async def test_get_task_for_date(
     test_admin_user,
     due_date,
 ):
-    current_time = await get_current_time.ainvoke({})
-    today = current_time.split()[0]
+    today = get_current_time()
 
     with patch_task_manager:
         task_list = await get_tasks_for_date.ainvoke(
